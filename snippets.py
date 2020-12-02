@@ -28,3 +28,6 @@ def pprint_tree(node, file=None, _prefix="", _last=True, childrenattr='children'
         for i, l in enumerate(f):
             pass
     return i + 1
+
+def print_progress_same_line(progress):
+  print(f"\r{progress}", end='', flush=True)
