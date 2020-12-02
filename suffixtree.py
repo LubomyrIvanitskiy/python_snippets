@@ -19,7 +19,8 @@ class WordSuffixTree(object):
         # add the rest of the suffixes, from longest to shortest
         
     def add_word(self, s):
-      s+="$"
+      s = ''.join([ch if (ch!='^' and ch!="$") else '_' for ch in s])
+      s+=f"^{s}$"
       for i in range(0, len(s)):
             cur = self.root
             j = i
@@ -83,9 +84,17 @@ class WordSuffixTree(object):
         node, off = self.followPath(s)
         return node is not None
 
-    def countSubstring(self, s):
-      node, off = self.followPath(s)
-      return node.count if node is not None else -1
+    def hasWord(self, s):
+        s = f"^{s}"
+        node, off = self.followPath(s)
+        if node is None:
+            return False  # fell off the tree
+        if off is None:
+            # finished on top of a node
+            return '$' in node.out
+        else:
+            # finished at offset 'off' within an edge leading to 'node'
+            return node.lab[off] == '$'
 
     def hasSuffix(self, s):
         """ Return true iff s is a suffix """
@@ -98,6 +107,23 @@ class WordSuffixTree(object):
         else:
             # finished at offset 'off' within an edge leading to 'node'
             return node.lab[off] == '$'
+
+    def countSubstring(self, s):
+        node, off = WordSuffixTree.followPath(self, s)
+        return node.count if node is not None else -1
+      
+    def countWord(self, s):
+        s = f"^{s}"
+        node, off = self.followPath(s)
+        if node is None:
+            return -1  # fell off the tree
+        if off is None:
+            # finished on top of a node
+            return node.out['$'].count if '$' in node.out else -1
+        else:
+            # finished at offset 'off' within an edge leading to 'node'
+            return node.lab[off].count if node.lab[off] == '$' else -1
+
 
 # https://github.com/LubomyrIvanitskiy/python_snippets/tree/main
 def pprint_tree(node, file=None, _prefix="", _last=True, childrenattr='children', labelattr='label'):
@@ -122,6 +148,7 @@ def pprint_tree(node, file=None, _prefix="", _last=True, childrenattr='children'
 
 
 
+
 if __name__=='__main__':
   test = """
     Gaudeamus igitur,
@@ -137,3 +164,4 @@ if __name__=='__main__':
   #method from snippets
   pprint_tree(test_stree.root, childrenattr='out', labelattr='lab')
   print(test_stree.countSubstring("ма"))
+  print(test_stree.countSubstring("мама"))
