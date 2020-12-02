@@ -77,6 +77,36 @@ class WordSuffixTree(object):
             else:
                 return (None, None)  # fell off in the middle of the edge
         return (cur, None)  # exhausted query string at internal node
+    
+        def stringPerplexity(self, s, prnt=True):
+        cur = self.root
+        perplexity=1
+        passed_letters_count = 0
+        i = 0
+        while i < len(s):
+            c = s[i]
+            if c not in cur.out:
+                return (None, None)  # fell off at a node
+            child = cur.out[s[i]]
+            if cur.lab is not None and prnt:
+              perplexity *= child.count/cur.count
+              print(child.lab, child.count/cur.count)
+            lab = child.lab
+            j = i + 1
+            while j - i < len(lab) and j < len(s) and s[j] == lab[j - i]:
+                j += 1
+            if j - i == len(lab):
+                cur = child  # exhausted edge
+                i = j
+            elif j == len(s):
+                perplexity = perplexity ** -(1/j)
+                return perplexity, j  # exhausted query string in middle of edge
+            else:
+                perplexity = perplexity ** -(1/j)
+                return perplexity, j  # fell off in the middle of the edge
+        perplexity = perplexity ** -(1/len(s))
+        return perplexity, len(s)  # exhausted query string at internal node
+
 
     def hasSubstring(self, s):
         """ Return true iff s appears as a substring """
