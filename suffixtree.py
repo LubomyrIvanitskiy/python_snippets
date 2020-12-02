@@ -163,6 +163,6 @@ if __name__=='__main__':
   for word in test_words:
     test_stree.add_word(word)
   #method from snippets
-  pprint_tree(test_stree.root, childrenattr='out', labelattr='lab')
+  pprint_tree(test_stree.root, childrenattr='out', , getlabel=lambda node: node.lab)
   print(test_stree.countSubstring("ма"))
   print(test_stree.countWord("мама"))
