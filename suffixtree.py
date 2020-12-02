@@ -19,7 +19,11 @@ class WordSuffixTree(object):
         # add the rest of the suffixes, from longest to shortest
         
     def add_word(self, s):
-      s = ''.join([ch if (ch!='^' and ch!="$") else '_' for ch in s])
+      # s = ''.join([ch if (ch!='^' and ch!="$") else '_' for ch in s])
+      s = ''.join([(ch if (ch.isalpha() or ch == "'") else " ") for ch in s])
+      if "вчинк" in s:
+        print(s)
+        
       s = f"^{s}$"
       for i in range(0, len(s)):
             cur = self.root
@@ -43,11 +47,9 @@ class WordSuffixTree(object):
                         mid = self.Node(lab[:k - j])
                         mid.count = child.count
                         mid.out[cNew] = self.Node(s[k:])
-                        mid.out[cNew].count += 1
                         # print("mid.out[cNew]", mid.out[cNew].lab, mid.out[cNew].count)
                         mid.out[cExist] = child
                         # We already increased this node count in the if k - j scope lets decrease it such as we don't follow this pass and this node was cloned from above
-                        mid.out[cExist].count -= 1
                         child.lab = lab[k - j:]
                         cur.out[s[j]] = mid
                 else:
@@ -122,11 +124,11 @@ class WordSuffixTree(object):
             return node.out['$'].count if '$' in node.out else -1
         else:
             # finished at offset 'off' within an edge leading to 'node'
-            return node.lab[off].count if node.lab[off] == '$' else -1
+            return node.count if node.lab[off] == '$' else -1
 
 
 # https://github.com/LubomyrIvanitskiy/python_snippets/tree/main
-def pprint_tree(node, file=None, _prefix="", _last=True, childrenattr='children', labelattr='label'):
+def pprint_tree(node, file=None, _prefix="", _last=True, childrenattr='children', getlabel=lambda node: node.label):
     '''
     From https://vallentin.dev/2016/11/29/pretty-print-tree modified for cases when children is a dictionary
     Example: Node has a structure: 
@@ -137,18 +139,16 @@ def pprint_tree(node, file=None, _prefix="", _last=True, childrenattr='children'
     Usage:
     pprint_tree(node, childrenattr='out', labelattr='lab')
     '''
-    label = str(getattr(node, labelattr))
+    label = str(getlabel(node))
     children = getattr(node, childrenattr)
     print(_prefix, "`- " if _last else "|- ", label, sep="", file=file)
     _prefix += "   " if _last else "|  "
     child_count = len(children)
     for i, child in enumerate(children):
         _last = i == (child_count - 1)
-        pprint_tree(children[child], file, _prefix, _last, childrenattr=childrenattr, labelattr=labelattr)
-
-
-
-
+        pprint_tree(children[child], file, _prefix, _last, childrenattr=childrenattr, getlabel=getlabel)
+        
+        
 
 if __name__=='__main__':
   test = """
@@ -165,4 +165,4 @@ if __name__=='__main__':
   #method from snippets
   pprint_tree(test_stree.root, childrenattr='out', labelattr='lab')
   print(test_stree.countSubstring("ма"))
-  print(test_stree.countSubstring("мама"))
+  print(test_stree.countWord("мама"))
