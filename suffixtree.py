@@ -20,7 +20,8 @@ class WordSuffixTree(object):
         
     def add_word(self, s):
       s = ''.join([ch if (ch!='^' and ch!="$") else '_' for ch in s])
-      s+=f"^{s}$"
+      s = f"^{s}$"
+      print(s)
       for i in range(0, len(s)):
             cur = self.root
             j = i
@@ -145,6 +146,7 @@ def pprint_tree(node, file=None, _prefix="", _last=True, childrenattr='children'
     for i, child in enumerate(children):
         _last = i == (child_count - 1)
         pprint_tree(children[child], file, _prefix, _last, childrenattr=childrenattr, labelattr=labelattr)
+
 
 
 
