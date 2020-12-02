@@ -21,7 +21,6 @@ class WordSuffixTree(object):
     def add_word(self, s):
       s = ''.join([ch if (ch!='^' and ch!="$") else '_' for ch in s])
       s = f"^{s}$"
-      print(s)
       for i in range(0, len(s)):
             cur = self.root
             j = i
