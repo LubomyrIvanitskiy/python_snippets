@@ -20,3 +20,11 @@ def pprint_tree(node, file=None, _prefix="", _last=True, childrenattr='children'
     for i, child in enumerate(children):
         _last = i == (child_count - 1)
         pprint_tree(children[child], file, _prefix, _last, childrenattr=childrenattr, labelattr=labelattr)
+
+        
+        
+ def file_line_count(fname):
+    with open(fname) as f:
+        for i, l in enumerate(f):
+            pass
+    return i + 1
